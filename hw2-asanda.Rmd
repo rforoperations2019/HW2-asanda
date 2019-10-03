@@ -1,0 +1,53 @@
+---
+title: "HW 2 Leaflet"
+author: "Ahmed Sanda"
+date: "10/2/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r setup, include=FALSE}
+library(rgdal)
+library(leaflet)
+library(leaflet.extras)
+library(dplyr)
+library(readxl)
+library(stringr)
+```
+
+## Load map datasets into R
+```{r}
+bikes <- readOGR("Bike_Network.geojson")
+plot(bikes)
+
+facilities <- readOGR("City_Facilities_pub.geojson")
+plot(facilities)
+
+rec <- readOGR("ppr_districts_2018.geojson")
+plot(rec)
+```
+
+## Leaflet Philly bike map with lines
+```{r}
+leaflet(data = bikes) %>%
+  addProviderTiles("Stamen.Toner") %>%
+  addPolylines(color = "#63CBD3")
+```
+## Leaflet Philly parks and rec services
+```{r}
+leaflet(data = rec) %>%
+  addProviderTiles("Stamen.Toner") %>%
+  addPolygons(color = "#63CBD3")
+```
+## Leaflet Philly services
+```{r}
+leaflet(data = facilities) %>%
+  addProviderTiles("Stamen.Toner") %>%
+  addMarkers(data = facilities)
+```
+
+
+
