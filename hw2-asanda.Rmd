@@ -46,7 +46,10 @@ leaflet(data = rec) %>%
 ```{r}
 leaflet(data = facilities) %>%
   addProviderTiles("Stamen.Toner") %>%
-  addMarkers(data = facilities)
+  #addCircleMarkers()
+  addMarkers(
+    clusterOptions = markerClusterOptions()
+    )
 ```
 
 
