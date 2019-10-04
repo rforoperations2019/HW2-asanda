@@ -30,12 +30,35 @@ rec <- readOGR("ppr_districts_2018.geojson")
 plot(rec)
 ```
 
+#Consolidated Bike map with basemap selection option 
+```{r}
+leaflet(data = bikes) %>%
+  addProviderTiles(providers$Stamen.Toner, group = 'Stamen')%>%
+  addProviderTiles(providers$Stamen.Terrain, group = 'Terrain') %>%
+  addLayersControl(
+    baseGroups = c("Stamen", "Terrain")
+#    ,overlayGroups = c("DE", "FR")
+    ,options = layersControlOptions(collapsed = FALSE)
+) %>%
+    addPolylines(color = "#63CBD3")
+```
+
+
 ## Leaflet Philly bike map with lines
 ```{r}
 leaflet(data = bikes) %>%
   addProviderTiles("Stamen.Toner") %>%
   addPolylines(color = "#63CBD3")
 ```
+
+# Leaflet Stamen Terrain map with Bike overlay
+```{r}
+leaflet(data = bikes) %>%
+  addProviderTiles("Stamen.Terrain") %>%
+  addPolylines(color = "#63CBD3")
+
+```
+
 ## Leaflet Philly parks and rec services
 ```{r}
 leaflet(data = rec) %>%
