@@ -18,70 +18,50 @@ library(readxl)
 library(stringr)
 ```
 
-## Load map datasets into R
+## Load Philadelphia map datasets into R
 ```{r}
 bikes <- readOGR("Bike_Network.geojson")
-plot(bikes)
+#plot(bikes)
 
 facilities <- readOGR("City_Facilities_pub.geojson")
-plot(facilities)
+#plot(facilities)
 
 rec <- readOGR("ppr_districts_2018.geojson")
-plot(rec)
+#plot(rec)
 ```
 
-#Consolidated Bike map with basemap selection option 
+#Consolidated Bike map with basemap selection option and layer control for different philadelphia demographics
 ```{r}
-biketypes <- as.list.factor(levels(bikes$TYPE))
-class(biketypes)
 
+# Create color palette for layer legends
 bikepalette <- colorFactor(palette() , levels = levels(bikes$TYPE))
+districtspalette <- colorFactor(palette(), levels = levels(rec$label))
 
-leaflet(data = bikes) %>%
+# Render combination layered map of Philadelphia
+leaflet() %>%
+  # Add first base map
   addProviderTiles(providers$Stamen.Toner, group = 'Stamen')%>%
+  # Add second base map
   addProviderTiles(providers$Stamen.Terrain, group = 'Terrain') %>%
-  addLayersControl(
-    baseGroups = c("Stamen", "Terrain")
-#    ,overlayGroups = c("DE", "FR")
-    ,options = layersControlOptions(collapsed = FALSE)
-) %>%
-    addPolylines(color = ~bikepalette(TYPE)) %>%
-  addLegend(position = "topright" , pal = bikepalette, values = bikes$TYPE, title = "Lane Type")
+  # Add layer control to select basemap and accompanying layers
+  addLayersControl(baseGroups = c("Stamen", "Terrain") 
+                   ,overlayGroups = c("Bike Lanes", "Districts", "Facilities")
+                   ,options = layersControlOptions(collapsed = FALSE)) %>%
+  # Add line data from bike lanes dataset for philly
+  addPolylines(data = bikes,color = ~bikepalette(TYPE), group = "Bike Lanes") %>%
+  # Add philly district polygons
+  addPolygons(data = rec, color = ~districtspalette(x = label), group =  "Districts") %>%
+  # Add philly public facilites markers
+  addMarkers(clusterOptions = markerClusterOptions(), data = facilities, group = "Facilities", label = facilities$ASSET_NAME) %>%
+  # Add bike lane type legend and only  apply when bike group is selected
+  addLegend(position = "topright" , pal = bikepalette, values = bikes$TYPE, title = "Lane Type", group = "Bike Lanes") %>%
+  # Add Philly districts legend and only apply for the district group selection
+  addLegend(position = "topleft" , pal = districtspalette, values = rec$label, title = "Districts", group = "Districts")
+  
 
 
 ```
 
-
-## Leaflet Philly bike map with lines
-```{r}
-leaflet(data = bikes) %>%
-  addProviderTiles("Stamen.Toner") %>%
-  addPolylines(color = "#63CBD3")
-```
-
-# Leaflet Stamen Terrain map with Bike overlay
-```{r}
-leaflet(data = bikes) %>%
-  addProviderTiles("Stamen.Terrain") %>%
-  addPolylines(color = "#63CBD3")
-
-```
-
-## Leaflet Philly parks and rec services
-```{r}
-leaflet(data = rec) %>%
-  addProviderTiles("Stamen.Toner") %>%
-  addPolygons(color = "#63CBD3")
-```
-## Leaflet Philly services
-```{r}
-leaflet(data = facilities) %>%
-  addProviderTiles("Stamen.Toner") %>%
-  #addCircleMarkers()
-  addMarkers(
-    clusterOptions = markerClusterOptions()
-    )
-```
 
 
 
