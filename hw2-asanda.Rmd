@@ -32,6 +32,11 @@ plot(rec)
 
 #Consolidated Bike map with basemap selection option 
 ```{r}
+biketypes <- as.list.factor(levels(bikes$TYPE))
+class(biketypes)
+
+bikepalette <- colorFactor(palette() , levels = levels(bikes$TYPE))
+
 leaflet(data = bikes) %>%
   addProviderTiles(providers$Stamen.Toner, group = 'Stamen')%>%
   addProviderTiles(providers$Stamen.Terrain, group = 'Terrain') %>%
@@ -40,7 +45,10 @@ leaflet(data = bikes) %>%
 #    ,overlayGroups = c("DE", "FR")
     ,options = layersControlOptions(collapsed = FALSE)
 ) %>%
-    addPolylines(color = "#63CBD3")
+    addPolylines(color = ~bikepalette(TYPE)) %>%
+  addLegend(position = "topright" , pal = bikepalette, values = bikes$TYPE, title = "Lane Type")
+
+
 ```
 
 
