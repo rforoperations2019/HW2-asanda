@@ -59,7 +59,6 @@ leaflet() %>%
   addLegend(position = "topleft" , pal = districtspalette, values = rec$label, title = "Districts", group = "Districts")
   
 
-
 ```
 
 
